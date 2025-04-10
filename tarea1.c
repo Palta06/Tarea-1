@@ -80,7 +80,7 @@ void mostrar_lista_pacientes(List *colaTickets) {
             current->prioridad = BAJO;
             break;
     }
-      current = list_next(colaTickets);
+    current = list_next(colaTickets);
     }
 }
 
@@ -156,7 +156,7 @@ int main() {
         puts("Opcion no valida. Por favor, intente de nuevo.");
         }
 
-    } while (opcion != '6');
+    } while (opcion != 6);
     printf("Presione cualquier tecla para continuar...\n");
 
   list_clean(colaTickets);
