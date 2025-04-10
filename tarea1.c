@@ -4,11 +4,12 @@
 #include <stdbool.h>
 #include <string.h>
 #include <time.h>
+#define MAX 200
 
 void mostrarMenu() {
     puts("========================================");
     puts("     Sistema de Gestion Hospitalaria");
-    puts("========================================");
+    puts("========================================\n");
   
     puts("1) Registrar nuevo paciente");
     puts("2) Asignar prioridad a paciente");
@@ -25,8 +26,8 @@ typedef enum {
     } Prioridad;
 
 typedef struct Ticket {
-    char id;
-    char descripcion;
+    int id;
+    char descripcion[MAX];
     Prioridad prioridad;
     time_t horaRegistro;
 } Ticket;
@@ -38,10 +39,10 @@ int lower_than(void *a, void *b) {
     return p1->horaRegistro < p2->horaRegistro;
   }
 
-void registrarPaciente(List *colaPacientes){
+void registrarPaciente(List *colaTickets){
     Ticket *nuevo = malloc(sizeof(Ticket));
     printf("ID del paciente:\n");
-    scanf("%c", &nuevo->id);
+    scanf("%d", &nuevo->id);
     getchar();
     printf("Descripcion del paciente:\n");
     scanf("%c", &nuevo->descripcion);
@@ -49,28 +50,84 @@ void registrarPaciente(List *colaPacientes){
     nuevo->prioridad = BAJO;
     nuevo->horaRegistro = time(NULL);
 
-    list_sortedInsert(colaPacientes, nuevo, lower_than);
+    list_sortedInsert(colaTickets, nuevo, lower_than);
     printf("Paciente registrado con prioridad baja.\n");
 }
 
-void mostrar_lista_pacientes(List *colaPacientes) {
-    if (list_size(colaPacientes) == 0) {
+void mostrar_lista_pacientes(List *colaTickets) {
+    if (list_size(colaTickets) == 0) {
       printf("No hay pacientes en espera.\n");
       return;
     }
     
-    Ticket *current = list_first(colaPacientes);
+    Ticket *current = list_first(colaTickets);
     while (current != NULL) {
-      printf("ID: %c\n", current->id);
+      printf("ID: %d\n", current->id);
       printf("Descripcion: %c\n", current->descripcion);
-      printf("Prioridad: %c\n", current->prioridad);
-      current = list_next(colaPacientes);
+      
+      switch (current->prioridad) {
+        case BAJO:
+            printf("Prioridad: Baja\n");
+            break;
+        case MEDIO:
+            printf("Prioridad: Media\n");
+            break;
+        case ALTO:
+            printf("Prioridad: Alta\n");
+            break;
+        default:
+            printf("Prioridad desconocida\n");
+            current->prioridad = BAJO;
+            break;
     }
+      current = list_next(colaTickets);
+    }
+}
+
+void asignarPrioridad(List *colaPacientes) {
+    if (list_size(colaPacientes) == 0) {
+        printf("No hay pacientes registrados.\n");
+        return;
+    }
+
+    int idBuscar;
+    printf("Inserte ID del paciente\n");
+    scanf("%d", &idBuscar);
+    while (getchar() != '\n');
+
+    Ticket *current = list_first(colaPacientes);
+    while (current && current->id != idBuscar)
+        current = list_next(colaPacientes);
+
+    if (current == NULL) {
+        printf("Paciente no encontrado.\n");
+        return;
+    }
+
+    int nuevaPrioridad;
+    printf("Inserte nueva prioridad\n");
+    printf("Inserte 1 para asignar prioridad baja\n");
+    printf("Inserte 2 para asignar prioridad media\n");
+    printf("Inserte 3 para asignar prioridad alta\n");
+    scanf("%d", &nuevaPrioridad);
+    while (getchar() != '\n');
+
+    if (nuevaPrioridad < 1 || nuevaPrioridad > 3) {
+        printf("Prioridad inválida.\n");
+        return;
+    }
+
+    list_removeCurrent(colaPacientes);
+    current->prioridad = nuevaPrioridad;
+    current->horaRegistro = time(NULL);
+    list_sortedInsert(colaPacientes, current, lower_than);
+
+    printf("Prioridad actualizada.\n");
 }
 
 int main() {
     int opcion;
-    List *colaPacientes = list_create();
+    List *colaTickets = list_create();
 
     do{
         mostrarMenu();
@@ -78,13 +135,13 @@ int main() {
         getchar();
         switch (opcion) {
         case 1:
-        registrarPaciente(colaPacientes);
+        registrarPaciente(colaTickets);
         break;
         case 2:
-        // Lógica para asignar prioridad
+        asignarPrioridad(colaTickets);
         break;
         case 3:
-        mostrar_lista_pacientes(colaPacientes);
+        mostrar_lista_pacientes(colaTickets);
         break;
         case 4:
         // Lógica para atender al siguiente paciente
@@ -100,12 +157,9 @@ int main() {
         }
 
     } while (opcion != '6');
-    if (opcion != 6){
-        printf("Presione cualquier tecla para continuar...\n");
-        getchar();
-    }
+    printf("Presione cualquier tecla para continuar...\n");
 
-  list_clean(colaPacientes);
+  list_clean(colaTickets);
 
   return 0;
 }
