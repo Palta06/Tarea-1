@@ -1,4 +1,5 @@
 #include "TDAs/list.h"
+#include "TDAs/list.c"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -8,22 +9,22 @@
 
 void mostrarMenu() {
     puts("========================================");
-    puts("     Sistema de Gestion Hospitalaria");
+    puts("     Sistema de Gestion de tickets");
     puts("========================================\n");
   
-    puts("1) Registrar nuevo paciente");
-    puts("2) Asignar prioridad a paciente");
-    puts("3) Mostrar lista de espera");
-    puts("4) Atender al siguiente paciente");
-    puts("5) Buscar detalles de Paciente");
-    puts("6) Salir");
+    puts("1. Registrar nuevo ticket");
+    puts("2. Asignar prioridad a ticket");
+    puts("3. Mostrar lista de espera");
+    puts("4. Procesar siguiente ticket");
+    puts("5. Buscar detalles de ticket");
+    puts("6. Salir");
   }
 
 typedef enum { 
     BAJO = 1,
     MEDIO = 2,
     ALTO = 3 
-    } Prioridad;
+} Prioridad;
 
 typedef struct Ticket {
     int id;
@@ -39,24 +40,24 @@ int lower_than(void *a, void *b) {
     return p1->horaRegistro < p2->horaRegistro;
   }
 
-void registrarPaciente(List *colaTickets){
+void registrarTicket(List *colaTickets){
     Ticket *nuevo = malloc(sizeof(Ticket));
-    printf("ID del paciente:\n");
+    printf("ID del ticket:\n");
     scanf("%d", &nuevo->id);
     getchar();
-    printf("Descripcion del paciente:\n");
+    printf("Descripcion del ticket:\n");
     scanf("%c", &nuevo->descripcion);
     getchar();
     nuevo->prioridad = BAJO;
     nuevo->horaRegistro = time(NULL);
 
     list_sortedInsert(colaTickets, nuevo, lower_than);
-    printf("Paciente registrado con prioridad baja.\n");
+    printf("Ticket registrado con prioridad baja.\n");
 }
 
-void mostrar_lista_pacientes(List *colaTickets) {
+void mostrarListaTickets(List *colaTickets) {
     if (list_size(colaTickets) == 0) {
-      printf("No hay pacientes en espera.\n");
+      printf("No hay tickets en espera.\n");
       return;
     }
     
@@ -80,27 +81,27 @@ void mostrar_lista_pacientes(List *colaTickets) {
             current->prioridad = BAJO;
             break;
     }
-    current = list_next(colaTickets);
+      current = list_next(colaTickets);
     }
 }
 
-void asignarPrioridad(List *colaPacientes) {
-    if (list_size(colaPacientes) == 0) {
-        printf("No hay pacientes registrados.\n");
+void asignarPrioridad(List *colaTickets) {
+    if (list_size(colaTickets) == 0) {
+        printf("No hay tickets registrados.\n");
         return;
     }
 
     int idBuscar;
-    printf("Inserte ID del paciente\n");
+    printf("Inserte ID del ticket\n");
     scanf("%d", &idBuscar);
     while (getchar() != '\n');
 
-    Ticket *current = list_first(colaPacientes);
+    Ticket *current = list_first(colaTickets);
     while (current && current->id != idBuscar)
-        current = list_next(colaPacientes);
+        current = list_next(colaTickets);
 
     if (current == NULL) {
-        printf("Paciente no encontrado.\n");
+        printf("Ticket no encontrado.\n");
         return;
     }
 
@@ -117,10 +118,10 @@ void asignarPrioridad(List *colaPacientes) {
         return;
     }
 
-    list_removeCurrent(colaPacientes);
+    list_popCurrent(colaTickets);
     current->prioridad = nuevaPrioridad;
     current->horaRegistro = time(NULL);
-    list_sortedInsert(colaPacientes, current, lower_than);
+    list_sortedInsert(colaTickets, current, lower_than);
 
     printf("Prioridad actualizada.\n");
 }
@@ -131,17 +132,17 @@ int main() {
 
     do{
         mostrarMenu();
-        scanf("%d", &opcion);
+        scanf("%c", &opcion);
         getchar();
         switch (opcion) {
         case 1:
-        registrarPaciente(colaTickets);
+        registrarTicket(colaTickets);
         break;
         case 2:
         asignarPrioridad(colaTickets);
         break;
         case 3:
-        mostrar_lista_pacientes(colaTickets);
+        mostrarListaTickets(colaTickets);
         break;
         case 4:
         // Lógica para atender al siguiente paciente
@@ -150,7 +151,7 @@ int main() {
         // Lógica para mostrar pacientes por prioridad
         break;
         case 6:
-        puts("Saliendo del sistema de gestion hospitalaria...");
+        puts("Saliendo del sistema de gestion de tickets...");
         break;
         default:
         puts("Opcion no valida. Por favor, intente de nuevo.");
