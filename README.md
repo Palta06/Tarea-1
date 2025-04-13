@@ -16,7 +16,7 @@ Este sistema ha sido desarrollado en lenguaje C y puede ejecutarse fácilmente u
 
 ### Pasos para compilar y ejecutar:
 
-1. **Descarga y descomprime el** el repositorio de GitHub.
+1. **Descarga y descomprime el repositorio de GitHub.**
 2. **Abre el proyecto en Visual Studio Code**
     - Inicia Visual Studio Code.
     - Selecciona `Archivo > Abrir carpeta...` y elige la carpeta donde descomprimiste el proyecto.
@@ -93,7 +93,7 @@ La lista muestra el ticket 423 en la parte superior, indicando su prioridad alta
 
 **Paso 4: Atender al Siguiente Ticket**
 
-El ticket 423 es llamado para ser atendido basándose en su prioridad.
+El ticket 423 está siendo procesado basándose en su prioridad.
 
 ```
 Opción seleccionada: 4) Atender al siguiente Ticket
